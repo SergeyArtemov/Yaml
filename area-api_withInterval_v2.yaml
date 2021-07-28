@@ -1,0 +1,120 @@
+﻿openapi: '3.0.2'
+
+info:
+  title: Area API
+  version: '1.0'
+
+servers:
+  - url: /api/v1
+
+paths:
+
+  /intersections/point:
+    post:
+      operationId: findPointIntersections
+      summary: Метод возвращает зоны, которые пересекаются с точкой, координаты которой передаются в запросе.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PointIntersectionRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PointIntersectionResponse'
+
+components:
+  schemas:
+
+    PointIntersectionRequest:
+      description: Запрос пересечений с точкой.
+      type: object
+      properties:
+        latitude: 
+          description: Широта.
+          type: number
+          format: double
+        longitude:
+          description: Долгота.
+          type: number
+          format: double
+        levels:
+          type: array
+          items:
+            type: integer
+            format: int32
+        interval:
+          $ref: '#/components/schemas/Interval'
+
+
+    PointIntersectionResponse:
+      description: Ответ на запрос пересечений с точкой.
+      type: object
+      properties:
+         areas:
+          description: Массив пересечений с зонами маршрутизатора.
+          type: array
+          items: 
+            $ref: '#/components/schemas/AreaIntersection'
+
+      
+    AreaIntersection:
+      description: Пересечение с зоной маршрутизатора.
+      type: object
+      properties:
+        id:
+          description: Идентификатор зоны.
+          type: integer
+          format: int32
+        parent_id:
+          description: Идентификатор родительской зоны.
+          type: integer
+          format: int32
+        level:
+          description: Уровень зоны.
+          type: integer
+          format: int32
+        name:
+          description: Наименоание зоны.
+          type: string
+        route_id:
+          description: Идентификатор (номер) маршрута.
+          type: integer
+          format: int64
+        working_days:
+          description: Массив дней недели.
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkingDay'
+        intervals:
+          type: array
+          items:
+            $ref: '#/components/schemas/Interval'
+
+    WorkingDay:
+      description: День недели.
+      type: string
+      enum:
+        - MONDAY
+        - TUESDAY
+        - WEDNESDAY
+        - THURSDAY
+        - FRIDAY
+        - SATURDAY
+        - SUNDAY
+
+    Interval:
+      description: Интервал
+      type: object
+      properties:
+        from:
+          description: Начало
+          type: string
+          format: 'date-time'
+        to:
+          description: Конец
+          type: string
+          format: 'date-time'
